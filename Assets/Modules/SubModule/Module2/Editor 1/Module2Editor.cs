@@ -1,25 +1,18 @@
 using Modules.Core.Runtime;
 using UnityEditor;
-using UnityEngine;
 
 namespace Modules.SubModule.Module2.Editor_1
 {
-    public class Module2Editor : UnityEditor.Editor
+    public class Module2Editor : Editor
     {
+        [ExcelSource("Assets/Excels/Module2.xlsx")]
+        [ExcelOutput("Assets/Data/Module2Data.json")]
         public class Module2Excel2Data : IExcel2Data
         {
-            public void Excel2Data()
+            public object Process(string excelPath)
             {
-                Debug.Log("Module 2 Excel to Data");
+                return null;
             }
         }
-        
-        [MenuItem("Modules/Create/Module2 excel to data")]
-        public static void ModuleExcel2Data()
-        {
-            var excel2Data = new Module2Excel2Data();
-            excel2Data.Excel2Data();
-        }
-
     }
 }

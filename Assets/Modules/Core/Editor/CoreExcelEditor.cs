@@ -1,19 +1,24 @@
 using System;
+using System.IO;
 using System.Linq;
 using Modules.Core.Runtime;
 using UnityEditor;
+using UnityEngine;
 
 namespace Modules.Core.Editor
 {
     public class CoreExcelEditor : UnityEditor.Editor
     {
+        private const string ExcelFolder = "Assets/Excels/";
+        private const string OutputFolder = "Assets/Data/";
+
         [MenuItem("Modules/Create/AllExcel2Data")]
         public static void AllExcel2Data()
         {
-            // 查找所有继承 IExcel2Data 的脚本
             var interfaceType = typeof(IExcel2Data);
 
-            var types = AppDomain.CurrentDomain
+            // 找到所有特殊处理器
+            var handlers = AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(a =>
                 {
@@ -30,22 +35,68 @@ namespace Modules.Core.Editor
                     interfaceType.IsAssignableFrom(t)
                     && !t.IsInterface
                     && !t.IsAbstract
+                )
+                .ToDictionary(
+                    t =>
+                    {
+                        var attr =
+                            (ExcelHandlerAttribute)
+                            Attribute.GetCustomAttribute(
+                                t,
+                                typeof(ExcelHandlerAttribute));
+
+                        return attr?.ExcelName;
+                    },
+                    t => t
                 );
 
-            foreach (var type in types)
+            // 扫描所有 Excel 文件
+            var excelFiles =
+                Directory.GetFiles(
+                    ExcelFolder,
+                    "*.xlsx",
+                    SearchOption.TopDirectoryOnly);
+
+            foreach (var excelPath in excelFiles)
             {
-                try
+                var excelName = Path.GetFileNameWithoutExtension(excelPath);
+
+                object result;
+
+                // 优先使用特殊处理器
+                if (handlers.TryGetValue(
+                        excelName,
+                        out var handlerType))
                 {
-                    var instance = (IExcel2Data)Activator.CreateInstance(type);
-                    instance.Excel2Data();
+                    Debug.Log($"使用特殊处理器：{excelName}");
+
+                    var instance =
+                        (IExcel2Data)
+                        Activator.CreateInstance(handlerType);
+
+                    result = instance.Process(excelPath);
                 }
-                catch (Exception e)
+                else
                 {
-                    UnityEngine.Debug.LogError(
-                        $"创建实例失败: {type.FullName}\n{e}"
-                    );
+                    Debug.Log($"使用默认处理器：{excelName}");
+
+                    result = DefaultExcelProcessor.Process(excelPath);
                 }
+
+                var json =
+                    JsonUtility.ToJson(result, true);
+
+                var outputPath =
+                    Path.Combine(
+                        OutputFolder,
+                        excelName + ".json");
+
+                File.WriteAllText(outputPath, json);
             }
-        } 
+
+            AssetDatabase.Refresh();
+
+            Debug.Log("全部 Excel 导出完成");
+        }
     }
 }

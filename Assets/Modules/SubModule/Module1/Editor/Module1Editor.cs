@@ -1,24 +1,23 @@
+using System;
+using System.IO;
 using Modules.Core.Runtime;
-using UnityEditor;
-using UnityEngine;
 
 namespace Modules.SubModule.Module1.Editor
 {
     public class Module1Editor : UnityEditor.Editor
     {
+        [ExcelSource("Assets/Excels/Module1.xlsx")]
+        [ExcelOutput("Assets/Data/Module1Data.json")]
         public class Module1Excel2Data : IExcel2Data
         {
-            public void Excel2Data()
+            public object Process(string excelPath)
             {
-                Debug.Log("Module 1 Excel to Data");
+                return new
+                {
+                    Name = Path.GetFileNameWithoutExtension(excelPath),
+                    Common = true
+                };
             }
-        }
-        
-        [MenuItem("Modules/Create/Module1 excel to data")]
-        public static void ModuleExcel2Data()
-        {
-            var excel2Data = new Module1Excel2Data();
-            excel2Data.Excel2Data();
         }
     }
 }
