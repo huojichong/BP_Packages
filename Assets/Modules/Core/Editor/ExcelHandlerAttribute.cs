@@ -1,6 +1,6 @@
 using System;
 
-namespace Modules.Core.Runtime
+namespace Modules.Core.Editor
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class ExcelHandlerAttribute : Attribute

@@ -1,10 +1,11 @@
+using Modules.Core.Editor;
 using Modules.Core.Runtime;
 using UnityEngine;
 
-namespace Modules.SubModule.Module1.Editor
+namespace Modules.SubModule.Module2.Editor
 {
-    [ExcelHandler("Skill")]
-    public class SkillExcelHandler : IExcel2Data
+    [ExcelHandler("Module2")]
+    public class Module2ExcelHandler : IExcel2Data
     {
         public object Process(string excelPath)
         {

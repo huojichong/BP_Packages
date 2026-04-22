@@ -1,13 +1,13 @@
 using System;
 
-namespace Modules.Core.Runtime
+namespace Modules.Core.Editor
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class ExcelSourceAttribute : Attribute
+    public class ExcelOutputAttribute : Attribute
     {
         public string Path { get; }
 
-        public ExcelSourceAttribute(string path)
+        public ExcelOutputAttribute(string path)
         {
             Path = path;
         }

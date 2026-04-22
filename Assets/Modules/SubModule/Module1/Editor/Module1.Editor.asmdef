@@ -2,7 +2,8 @@
     "name": "Module1.Editor",
     "rootNamespace": "",
     "references": [
-        "Core.Runtime"
+        "Core.Runtime",
+        "Core.Editor"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
